@@ -1,0 +1,82 @@
+package org.firstinspires.ftc.robotcontroller.internal;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.I2cAddr;
+import com.qualcomm.robotcore.hardware.I2cDevice;
+import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
+import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
+import com.qualcomm.robotcore.hardware.Servo;
+
+/**
+ * Created by Robotics on 1/12/2018.
+ */
+
+public class colorBlue extends LinearOpMode {
+    DcMotor leftMotor;
+    DcMotor rightMotor;
+    DcMotor lift;
+    DcMotor bottomRelic;
+    DcMotor linearSlide;
+    Servo grab1;
+    Servo grab2;
+    Servo topRelic;
+    Servo jewel;
+    byte[] colorCcache;
+    I2cDevice colorC;
+    I2cDeviceSynch colorCreader;
+
+
+    @Override
+    public void runOpMode(){
+        leftMotor = hardwareMap.dcMotor.get("leftMotor");
+        rightMotor = hardwareMap.dcMotor.get("rightMotor");
+        lift = hardwareMap.dcMotor.get("lift");
+        bottomRelic = hardwareMap.dcMotor.get("bottomRelic");
+        linearSlide = hardwareMap.dcMotor.get("linearSlide");
+        grab1 = hardwareMap.servo.get("grab1");
+        grab2 = hardwareMap.servo.get("grab2");
+        topRelic = hardwareMap.servo.get("topRelic");
+        jewel = hardwareMap.servo.get("jewel");
+        colorC = hardwareMap.i2cDevice.get("cc");
+        colorCreader = new I2cDeviceSynchImpl(colorC, I2cAddr.create8bit(0x3a),false);
+        colorCreader.engage();
+        colorCreader.write8(3,0); //active mode
+
+
+
+        waitForStart();
+        jewel.setPosition(0);
+        colorCcache = colorCreader.read(0x04, 1); //read color
+        telemetry.addData("Color Value", colorCcache[0]);
+        telemetry.update();
+        sleep(3000);
+        colorCcache = colorCreader.read(0x04, 1); //read color
+
+            if (colorCcache[0] <= 4 && colorCcache[0] >= 2) { //blue
+                leftMotor.setPower(0.3);
+                rightMotor.setPower(-0.3);
+                sleep(1000); //how long it moves forward
+                leftMotor.setPower(0);
+                rightMotor.setPower(0);
+                sleep(1000);
+                telemetry.update();
+                telemetry.addData("Color Value", colorCcache[0]);
+
+            } else if (colorCcache[0] <= 11 && colorCcache[0] >= 9) {      //red
+                leftMotor.setPower(-0.3);
+                rightMotor.setPower(0.3);
+                sleep(1000);
+                leftMotor.setPower(0);
+                rightMotor.setPower(0);
+                sleep(1000);
+                telemetry.update();
+                telemetry.addData("Color Value", colorCcache[0]);
+
+            }
+
+        }
+
+    }
+
+
