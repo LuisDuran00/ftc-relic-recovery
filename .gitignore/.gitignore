@@ -1,0 +1,89 @@
+package org.firstinspires.ftc.robotcontroller.internal;
+
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.I2cDevice;
+import com.qualcomm.robotcore.hardware.Servo;
+
+/**
+ * Created by Robotics on 11/30/2017.
+ */
+
+public class relic extends OpMode{
+    DcMotor leftMotor;
+    DcMotor rightMotor;
+    DcMotor lift;
+    DcMotor bottomRelic;
+    DcMotor linearSlide;
+    Servo grab1;
+    Servo grab2;
+    Servo topRelic;
+    Servo jewel;
+    I2cDevice colorC;
+    @Override
+    public void init(){
+        leftMotor = hardwareMap.dcMotor.get("leftMotor");
+        rightMotor = hardwareMap.dcMotor.get("rightMotor");
+        lift = hardwareMap.dcMotor.get("lift");
+        bottomRelic = hardwareMap.dcMotor.get("bottomRelic");
+        linearSlide = hardwareMap.dcMotor.get("linearSlide");
+        grab1 = hardwareMap.servo.get("grab1");
+        grab2 = hardwareMap.servo.get("grab2");
+        topRelic = hardwareMap.servo.get("topRelic");
+        jewel = hardwareMap.servo.get("jewel");
+        colorC = hardwareMap.i2cDevice.get("cc");
+
+
+        jewel.setPosition(-1);
+        grab1.setPosition(0.7);
+        grab2.setPosition(-0.7);
+        topRelic.setPosition(-1);
+
+
+
+
+    }
+    @Override
+    public void loop(){
+        jewel.setPosition(-1);
+        float leftDrive = -gamepad1.left_stick_y;
+        float rightDrive = gamepad1.right_stick_y;
+        float bottomPower = gamepad2.right_stick_y;
+        leftMotor.setPower(leftDrive);
+        rightMotor.setPower(rightDrive);
+        bottomRelic.setPower(bottomPower*0.3);
+        if (gamepad2.left_bumper){
+            lift.setPower(0.75);
+        }else if (gamepad2.left_trigger > 0.4){
+            lift.setPower(-0.75);
+        }else{
+            lift.setPower(0);
+        }
+        if (gamepad2.right_bumper){
+            linearSlide.setPower(1);
+        }else if(gamepad2.right_trigger>0.2){
+            linearSlide.setPower(-1);
+        }else{
+            linearSlide.setPower(0);
+        }
+        if (gamepad2.a){
+            grab2.setPosition(0.);
+            grab1.setPosition(0);
+        }else{
+            grab1.setPosition(0.7);
+            grab2.setPosition(-0.7);
+        }
+        if (gamepad2.x){
+            topRelic.setPosition(0.5);
+        }else if (gamepad2.y){
+            topRelic.setPosition(-1);
+        }
+
+    }
+    @Override
+    public void stop(){
+
+    }
+}
